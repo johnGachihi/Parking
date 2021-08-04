@@ -81,20 +81,7 @@ internal class ModbusWriteRequestHandlerTest {
         assertThat(actualResponsePayload).isEqualTo(expectedResponsePayload)
     }
 
-    private fun makeModbusMessage(pdu: ModbusPdu): ModbusTcpPayload {
-        return ModbusTcpPayload(1, 1, pdu)
-    }
 
-    private fun makeWriteMultipleRegisterModbusRequestMessage(
-        writeData: ByteBuf = Unpooled.buffer().writeInt(12)
-    ): ModbusTcpPayload {
-        val pdu = WriteMultipleRegistersRequest(1, 1, writeData)
-        return makeModbusMessage(pdu)
-    }
 
-    private fun makeReadCoilModbusRequestMessage() =
-        makeModbusMessage(ReadCoilsRequest(1, 1))
 
-    private fun makeWriteMultipleRegisterModbusResponseMessage() =
-        makeModbusMessage(WriteMultipleRegistersResponse(1, 1))
 }
