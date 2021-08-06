@@ -2,18 +2,15 @@ package com.johngachihi.parking.modbustcp
 
 import com.digitalpetri.modbus.ExceptionCode
 import com.digitalpetri.modbus.FunctionCode
-import com.digitalpetri.modbus.ModbusPdu
 import com.digitalpetri.modbus.codec.ModbusTcpPayload
 import com.digitalpetri.modbus.requests.*
 import com.digitalpetri.modbus.responses.ExceptionResponse
 import com.johngachihi.parking.ParkingApplication
+import com.johngachihi.parking.modbustcp.camel.ModbusTcpEndpointProperties
 import io.netty.buffer.Unpooled
 import org.apache.camel.CamelContext
-import org.apache.camel.EndpointInject
 import org.apache.camel.ProducerTemplate
-import org.apache.camel.component.mock.MockEndpoint
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest
-import org.apache.camel.test.spring.junit5.MockEndpointsAndSkip
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

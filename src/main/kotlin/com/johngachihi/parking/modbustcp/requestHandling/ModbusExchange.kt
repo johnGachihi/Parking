@@ -1,4 +1,4 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.requestHandling
 
 import com.digitalpetri.modbus.codec.ModbusTcpPayload
 

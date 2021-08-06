@@ -1,6 +1,8 @@
 package com.johngachihi.parking.modbustcp
 
 import com.digitalpetri.modbus.responses.WriteMultipleRegistersResponse
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusWriteRequestExchange
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusWriteRequestHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.BeforeEach

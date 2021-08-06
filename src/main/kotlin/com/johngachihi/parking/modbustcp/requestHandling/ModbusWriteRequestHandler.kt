@@ -1,7 +1,9 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.requestHandling
 
 import com.digitalpetri.modbus.codec.ModbusTcpPayload
 import com.digitalpetri.modbus.requests.WriteMultipleRegistersRequest
+import com.johngachihi.parking.modbustcp.controllers.ModbusController
+import com.johngachihi.parking.modbustcp.decoders.Decoder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -15,8 +17,8 @@ class ModbusWriteRequestHandler<T>(
             "The Modbus message handled by ${this::class.qualifiedName} " +
                     "must have a WriteMultipleRegisterRequest PDU."
         }
-
         val pdu = body.modbusPdu as WriteMultipleRegistersRequest
+
         modbusController.handleRequest(
             decoder.decode(pdu.values))
 

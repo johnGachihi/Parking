@@ -1,4 +1,4 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.decoders
 
 import io.netty.buffer.ByteBuf
 

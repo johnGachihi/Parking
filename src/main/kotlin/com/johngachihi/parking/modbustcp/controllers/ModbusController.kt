@@ -1,4 +1,4 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.controllers
 
 interface ModbusController<T, R> {
     fun handleRequest(msg: T): R

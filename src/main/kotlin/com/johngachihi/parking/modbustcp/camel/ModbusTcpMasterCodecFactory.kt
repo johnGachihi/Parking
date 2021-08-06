@@ -1,4 +1,4 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.camel
 
 import com.digitalpetri.modbus.codec.ModbusRequestDecoder
 import com.digitalpetri.modbus.codec.ModbusResponseEncoder

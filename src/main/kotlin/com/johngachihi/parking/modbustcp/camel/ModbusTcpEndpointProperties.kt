@@ -1,4 +1,4 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.camel
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

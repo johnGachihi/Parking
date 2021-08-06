@@ -1,17 +1,14 @@
 package com.johngachihi.parking.modbustcp
 
-import com.digitalpetri.modbus.ModbusPdu
-import com.digitalpetri.modbus.codec.ModbusTcpPayload
-import com.digitalpetri.modbus.requests.ReadCoilsRequest
-import com.digitalpetri.modbus.requests.WriteMultipleRegistersRequest
-import com.digitalpetri.modbus.responses.WriteMultipleRegistersResponse
+import com.johngachihi.parking.modbustcp.controllers.ModbusController
+import com.johngachihi.parking.modbustcp.decoders.Decoder
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusExchange
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusWriteRequestHandler
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName

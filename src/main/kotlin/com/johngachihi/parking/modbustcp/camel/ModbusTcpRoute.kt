@@ -6,14 +6,11 @@ import com.digitalpetri.modbus.codec.ModbusTcpPayload
 import com.digitalpetri.modbus.requests.WriteMultipleRegistersRequest
 import com.digitalpetri.modbus.responses.ExceptionResponse
 import com.digitalpetri.modbus.responses.WriteMultipleRegistersResponse
-import io.netty.buffer.Unpooled
-import org.apache.camel.Exchange
+import com.johngachihi.parking.modbustcp.camel.ModbusTcpEndpointProperties
 import org.apache.camel.Predicate
-import org.apache.camel.Processor
 import org.apache.camel.builder.PredicateBuilder
 import org.apache.camel.builder.RouteBuilder
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.convert.ConverterBuilder
 import org.springframework.stereotype.Component
 
 @Component
