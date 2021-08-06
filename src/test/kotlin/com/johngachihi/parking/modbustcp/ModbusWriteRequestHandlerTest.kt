@@ -2,7 +2,8 @@ package com.johngachihi.parking.modbustcp
 
 import com.johngachihi.parking.modbustcp.controllers.ModbusController
 import com.johngachihi.parking.modbustcp.decoders.Decoder
-import com.johngachihi.parking.modbustcp.requestHandling.ModbusExchange
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusResponseFactory
+import com.johngachihi.parking.modbustcp.requestHandling.ModbusResponseStatus
 import com.johngachihi.parking.modbustcp.requestHandling.ModbusWriteRequestHandler
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,6 +15,7 @@ import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.web.bind.annotation.ResponseStatus
 
 @DisplayName("Test ModbusWriteRequestHandler")
 @ExtendWith(MockKExtension::class)
@@ -22,10 +24,10 @@ internal class ModbusWriteRequestHandlerTest {
     private lateinit var decoder: Decoder<Long>
 
     @RelaxedMockK
-    private lateinit var modbusController: ModbusController<Long, Unit>
+    private lateinit var modbusController: ModbusController<Long>
 
     @RelaxedMockK
-    private lateinit var modbusExchange: ModbusExchange
+    private lateinit var modbusResponseFactory: ModbusResponseFactory
 
     @InjectMockKs
     private lateinit var modbusWriteRequestHandler: ModbusWriteRequestHandler<Long>
@@ -68,17 +70,30 @@ internal class ModbusWriteRequestHandlerTest {
     }
 
     @Test
+    fun `Passes ResponseStatus from the ModbusController to the ModbusWriteRequestResponseFactory`() {
+        every {
+            modbusController.handleRequest(any())
+        } returns ModbusResponseStatus.ILLEGAL_DATA
+
+        val modbusPayload = makeWriteMultipleRegisterModbusRequestMessage()
+        modbusWriteRequestHandler.handle(modbusPayload)
+
+        verify {
+            modbusResponseFactory.createResponse(
+                modbusPayload,
+                ModbusResponseStatus.ILLEGAL_DATA
+            )
+        }
+    }
+
+    @Test
     fun `Returns response as created by the Modbus exchange`() {
         val expectedResponsePayload = makeWriteMultipleRegisterModbusResponseMessage()
-        every { modbusExchange.createResponse(any()) } returns expectedResponsePayload
+        every { modbusResponseFactory.createResponse(any(), any()) } returns expectedResponsePayload
 
         val modbusPayload = makeWriteMultipleRegisterModbusRequestMessage()
         val actualResponsePayload = modbusWriteRequestHandler.handle(modbusPayload)
 
         assertThat(actualResponsePayload).isEqualTo(expectedResponsePayload)
     }
-
-
-
-
 }
