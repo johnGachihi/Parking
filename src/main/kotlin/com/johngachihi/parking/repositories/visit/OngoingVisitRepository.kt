@@ -1,11 +1,11 @@
-package com.johngachihi.parking.repositories
+package com.johngachihi.parking.repositories.visit
 
-import com.johngachihi.parking.entities.OngoingVisit
+import com.johngachihi.parking.entities.visit.OngoingVisit
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface OngoingVisitRepository : JpaRepository<OngoingVisit, Long> {
+interface OngoingVisitRepository : JpaRepository<OngoingVisit, Long>, FinishVisitRepositoryFragment {
 //    fun saveOnGoingVisit(ongoingVisit: OngoingVisit): Long
 //    Replaced by save(...)
 
@@ -15,5 +15,6 @@ interface OngoingVisitRepository : JpaRepository<OngoingVisit, Long> {
 //    fun findOngoingVisitByTicketCode(ticketCode: Long): OngoingVisit?
     fun findByTicketCode(ticketCode: Long): OngoingVisit?
 
-    fun finishOngoingVisit(ongoingVisit: OngoingVisit) // TODO: Add query
+//    fun finishOngoingVisit(ongoingVisit: OngoingVisit) // TODO: Add query
+//    Replaced by FinishVisitRepositoryFragment
 }

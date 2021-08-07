@@ -2,7 +2,7 @@ package com.johngachihi.parking.services
 
 import com.johngachihi.parking.InvalidTicketCodeException
 import com.johngachihi.parking.UnpaidFeeException
-import com.johngachihi.parking.repositories.OngoingVisitRepository
+import com.johngachihi.parking.repositories.visit.OngoingVisitRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

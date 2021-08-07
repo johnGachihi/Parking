@@ -2,8 +2,8 @@ package com.johngachihi.parking.services
 
 import com.johngachihi.parking.InvalidTicketCodeException
 import com.johngachihi.parking.UnpaidFeeException
-import com.johngachihi.parking.entities.OngoingVisit
-import com.johngachihi.parking.repositories.OngoingVisitRepository
+import com.johngachihi.parking.entities.visit.OngoingVisit
+import com.johngachihi.parking.repositories.visit.OngoingVisitRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -1,5 +1,6 @@
 package com.johngachihi.parking.entities
 
+import com.johngachihi.parking.entities.visit.Visit
 import org.hibernate.annotations.CreationTimestamp
 import java.time.Instant
 import javax.persistence.Entity
@@ -16,7 +17,7 @@ open class Payment {
 
     @NotNull
     @ManyToOne
-    open val visit: Visit? = null
+    open var visit: Visit? = null
 
     @NotNull
     @CreationTimestamp

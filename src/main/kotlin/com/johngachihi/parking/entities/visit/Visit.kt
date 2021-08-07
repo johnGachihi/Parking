@@ -1,7 +1,6 @@
-package com.johngachihi.parking.entities
+package com.johngachihi.parking.entities.visit
 
-import org.hibernate.annotations.Cascade
-import org.hibernate.annotations.CascadeType
+import com.johngachihi.parking.entities.Payment
 import org.hibernate.annotations.CreationTimestamp
 import java.time.Instant
 import javax.persistence.*
@@ -23,9 +22,8 @@ open class Visit {
     @OneToMany(
         mappedBy = "visit",
         targetEntity = Payment::class,
-        cascade = [javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH],
+        cascade = [javax.persistence.CascadeType.ALL]
     )
-    @Cascade(CascadeType.SAVE_UPDATE)
     open var payments: List<Payment> = emptyList()
 }
 
