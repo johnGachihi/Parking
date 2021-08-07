@@ -13,6 +13,9 @@ import org.apache.camel.builder.RouteBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+// TODO: Create ExceptionHandler component for mapping any exception
+//       to a response (ModbusTcpPayload)
+
 @Component
 class ModbusTcpRoute(
     @Autowired
@@ -22,16 +25,19 @@ class ModbusTcpRoute(
         val nettyUrl = "netty:tcp://${modbusProps.address}:${modbusProps.port}?" +
                 "decoders=#modbusTcpMasterCodecFactory"
 
-        onException(UnsupportedFunctionException::class.java)
-            .handled(true)
-            .bean("unsupportedFunctionCodeExceptionHandler")
-
-        from(nettyUrl)
+        from(nettyUrl).routeId("modbusEndpoint")
             .choice()
                 .`when`(isModbusFunctionCode(FunctionCode.WriteMultipleRegisters))
-                    .to("bean:exitRequestHandler")
+                    .to("direct:writeRequest")
                 .otherwise()
-                    .throwException(UnsupportedFunctionException())
+                    .throwException(UnsupportedFunctionException()).id("throwUnsupportedFunctionException")
+
+        from("direct:writeRequest").routeId("writeRequest")
+            .choice()
+                .`when`(isWriteRequestAddress(2))
+                    .bean("exitRequestHandler").id("exitRequestHandler")
+                .otherwise()
+                    .throwException(IllegalAddressException())
     }
 
     private fun isModbusFunctionCode(functionCode: FunctionCode): Predicate {
@@ -39,10 +45,16 @@ class ModbusTcpRoute(
             simple("\${body.modbusPdu.functionCode.code} == ${functionCode.code}")
         )
     }
+
+    private fun isWriteRequestAddress(address: Int): Predicate {
+        return PredicateBuilder.toPredicate(
+            simple("\${body.modbusPdu.address} == $address")
+        )
+    }
 }
 
 @Component
-class MyComponent {
+class WriteRequestResponseComponent {
     fun a(body: ModbusTcpPayload): ModbusTcpPayload {
         val requestPdu = body.modbusPdu as WriteMultipleRegistersRequest
 
@@ -50,16 +62,5 @@ class MyComponent {
             requestPdu.address, requestPdu.quantity
         )
         return ModbusTcpPayload(body.transactionId, body.unitId, modbusPdu)
-    }
-}
-
-@Component
-class UnsupportedFunctionCodeExceptionHandler {
-    fun a(body: ModbusTcpPayload): ModbusTcpPayload {
-        val exceptionalResponsePdu = ExceptionResponse(
-            body.modbusPdu.functionCode,
-            ExceptionCode.IllegalFunction
-        )
-        return ModbusTcpPayload(body.transactionId, body.unitId, exceptionalResponsePdu)
     }
 }
