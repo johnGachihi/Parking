@@ -1,6 +1,7 @@
 package com.johngachihi.parking.modbustcp.requestHandling
 
 import com.johngachihi.parking.modbustcp.controllers.ModbusController
+import com.johngachihi.parking.modbustcp.controllers.ModbusEntryController
 import com.johngachihi.parking.modbustcp.decoders.Decoder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,4 +15,10 @@ class RequestHandlers {
     ): ModbusWriteRequestHandler<Long> {
         return ModbusWriteRequestHandler(rfidDecoder, modbusExitController)
     }
+
+    @Bean
+    fun entryRequestHandler(
+        rfidDecoder: Decoder<Long>,
+        modbusEntryController: ModbusEntryController
+    ) = ModbusWriteRequestHandler(rfidDecoder, modbusEntryController)
 }

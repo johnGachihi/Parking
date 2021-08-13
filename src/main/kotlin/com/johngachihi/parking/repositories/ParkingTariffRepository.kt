@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ParkingTariffRepository : JpaRepository<ParkingTariff, Long> {
     @Query("select p from ParkingTariff p order by p.upperLimit asc")
-    fun getAllInAscOrderOfUpperLimit(): List<ParkingTariff>
+    fun getAllInAscOrderOfUpperLimit(): List<ParkingTariff> // TODO: Put in 2-level cache.
 }

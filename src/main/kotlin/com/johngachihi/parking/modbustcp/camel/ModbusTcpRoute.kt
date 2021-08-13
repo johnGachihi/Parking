@@ -1,12 +1,11 @@
-package com.johngachihi.parking.modbustcp
+package com.johngachihi.parking.modbustcp.camel
 
-import com.digitalpetri.modbus.ExceptionCode
 import com.digitalpetri.modbus.FunctionCode
 import com.digitalpetri.modbus.codec.ModbusTcpPayload
 import com.digitalpetri.modbus.requests.WriteMultipleRegistersRequest
-import com.digitalpetri.modbus.responses.ExceptionResponse
 import com.digitalpetri.modbus.responses.WriteMultipleRegistersResponse
-import com.johngachihi.parking.modbustcp.camel.ModbusTcpEndpointProperties
+import com.johngachihi.parking.modbustcp.IllegalAddressException
+import com.johngachihi.parking.modbustcp.UnsupportedFunctionException
 import org.apache.camel.Predicate
 import org.apache.camel.builder.PredicateBuilder
 import org.apache.camel.builder.RouteBuilder
@@ -34,6 +33,8 @@ class ModbusTcpRoute(
 
         from("direct:writeRequest").routeId("writeRequest")
             .choice()
+                .`when`(isWriteRequestAddress(1))
+                    .bean("entryRequestHandler").id("entryRequestHandler")
                 .`when`(isWriteRequestAddress(2))
                     .bean("exitRequestHandler").id("exitRequestHandler")
                 .otherwise()

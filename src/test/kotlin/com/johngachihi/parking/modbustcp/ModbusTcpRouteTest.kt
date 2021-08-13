@@ -68,10 +68,35 @@ internal class ModbusTcpRouteTest {
 
         @Test
         @DisplayName(
+            "And its WriteMultipleRegister's address field is 1, " +
+                    "then routes message to the entryRequestHandler bean"
+        )
+        fun testWhenAddressFieldIs1() {
+            AdviceWith.adviceWith(camelContext, "writeRequest") {
+                it.weaveById<BeanDefinition>("entryRequestHandler")
+                    .replace().to("mock:entryRequestHandler").stop()
+            }
+
+            camelContext.start()
+
+            val entryRequestHandlerMock = camelContext.getEndpoint(
+                "mock:entryRequestHandler"
+            ) as MockEndpoint
+            entryRequestHandlerMock.expectedMessageCount(1)
+
+            val modbusMessage = makeWriteMultipleRegisterModbusRequestMessage(address = 1)
+            producerTemplate.sendBody("direct:start", modbusMessage)
+
+            entryRequestHandlerMock.assertIsSatisfied()
+        }
+
+
+        @Test
+        @DisplayName(
             "And its WriteMultipleRegister's address field is 2, " +
                     "then message is routed to the exitRequestHandler bean"
         )
-        fun testAddressFieldIs2() {
+        fun testWhenAddressFieldIs2() {
             AdviceWith.adviceWith(camelContext, "writeRequest") {
                 it.weaveById<BeanDefinition>("exitRequestHandler")
                     .replace().to("mock:exitRequestHandler").stop()

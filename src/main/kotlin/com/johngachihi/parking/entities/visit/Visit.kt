@@ -22,7 +22,7 @@ open class Visit {
     @OneToMany(
         mappedBy = "visit",
         targetEntity = Payment::class,
-        cascade = [javax.persistence.CascadeType.ALL]
+        cascade = [CascadeType.ALL]
     )
     open var payments: List<Payment> = emptyList()
 }
