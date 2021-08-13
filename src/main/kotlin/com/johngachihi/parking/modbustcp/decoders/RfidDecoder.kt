@@ -9,7 +9,9 @@ class RfidDecoder : Decoder<Long> {
     override fun decode(data: ByteBuf): Long {
         if (data.readableBytes() != 8) {
             throw DecodingException(
-                "Invalid Rfid code provided. The Rfid must be 8-bytes long"
+                "Invalid Rfid code provided. " +
+                        "The Rfid must be 8-bytes long. " +
+                        "The data provided is ${data.readableBytes()} bytes long"
             )
         }
 

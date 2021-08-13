@@ -1,5 +1,6 @@
 package com.johngachihi.parking.modbustcp.decoders
 
+import com.johngachihi.parking.make8Byte_ByteBufFromLong_LE
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import org.assertj.core.api.Assertions.assertThat
@@ -15,7 +16,7 @@ internal class RfidDecoderTest {
             .isThrownBy {
                 RfidDecoder().decode(makeByteBuf(2))
             }
-            .withMessage("Invalid Rfid code provided. The Rfid must be 8-bytes long")
+            .withMessage("Invalid Rfid code provided. The Rfid must be 8-bytes long. The data provided is 2 bytes long")
 
         assertThatExceptionOfType(DecodingException::class.java)
             .isThrownBy {
@@ -38,7 +39,4 @@ internal class RfidDecoderTest {
         }
         return data
     }
-
-    private fun make8Byte_ByteBufFromLong_LE(l: Long): ByteBuf =
-        Unpooled.buffer().writeLongLE(l)
 }

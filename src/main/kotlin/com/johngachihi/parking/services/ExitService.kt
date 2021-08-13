@@ -5,6 +5,7 @@ import com.johngachihi.parking.UnpaidFeeException
 import com.johngachihi.parking.repositories.visit.OngoingVisitRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface ExitService {
     /**
@@ -21,6 +22,7 @@ class DefaultExitService(
     @Autowired
     private val paymentService: PaymentService
 ) : ExitService {
+    @Transactional
     override fun finishVisit(ticketCode: Long) {
         val ongoingVisit = ongoingVisitRepository.findByTicketCode(ticketCode)
             ?: throw InvalidTicketCodeException(
