@@ -14,7 +14,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 
 @DisplayName("Test FinishVisitRepositoryFragmentImpl")
-@DataJpaTest
+@DataJpaTest(
+    properties = [
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.flyway.enabled=false"
+    ]
+)
 internal class FinishVisitRepositoryFragmentImplTest {
     @Autowired
     private lateinit var entityManager: TestEntityManager
@@ -47,6 +52,12 @@ internal class FinishVisitRepositoryFragmentImplTest {
             .isNull()
     }
 
+    @DataJpaTest(
+        properties = [
+            "spring.jpa.hibernate.ddl-auto=create-drop",
+            "spring.flyway.enabled=false"
+        ]
+    )
     @Nested
     @DisplayName("Persists a new FinishedVisit")
     inner class TestPersistsNewFinishedVisit {

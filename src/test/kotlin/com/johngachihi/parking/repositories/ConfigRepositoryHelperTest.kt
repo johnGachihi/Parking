@@ -9,7 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import javax.persistence.EntityManager
 
-@DataJpaTest
+@DataJpaTest(
+    properties = [
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.flyway.enabled=false"
+    ]
+)
 @DisplayName("Test ConfigRepositoryHelper")
 class ConfigRepositoryHelperTest {
     @Autowired

@@ -9,7 +9,7 @@ import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
-@Entity
+@Entity(name = "payments")
 open class Payment {
     @Id
     @GeneratedValue

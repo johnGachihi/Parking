@@ -34,6 +34,8 @@ dependencies {
     implementation("com.digitalpetri.modbus:modbus-codec:1.2.0")
 
     runtimeOnly("mysql:mysql-connector-java")
+    implementation("org.flywaydb:flyway-core:7.12.1")
+
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.apache.camel:camel-test-spring-junit5:$camelVersion")
