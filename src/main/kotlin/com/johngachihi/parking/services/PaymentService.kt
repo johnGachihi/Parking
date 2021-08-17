@@ -1,14 +1,13 @@
 package com.johngachihi.parking.services
 
+import com.johngachihi.parking.entities.payment.Payment
+import com.johngachihi.parking.entities.payment.isExpired
 import com.johngachihi.parking.entities.visit.OngoingVisit
-import com.johngachihi.parking.entities.Payment
 import com.johngachihi.parking.entities.visit.timeOfStay
 import com.johngachihi.parking.entities.visit.totalAmountPaid
 import com.johngachihi.parking.repositories.config.ParkingFeeConfigRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 interface PaymentService {
     fun calculateParkingFee(ongoingVisit: OngoingVisit): Double
@@ -36,12 +35,6 @@ class DefaultPaymentService(
     private fun getLatestPayment(ongoingVisit: OngoingVisit) =
         ongoingVisit.payments.maxByOrNull { it.madeAt }
 
-    // TODO: Extract to Payment extension function
-    private fun isExpired(payment: Payment): Boolean {
-        val ageOfPayment = payment.madeAt.until(Instant.now(), ChronoUnit.MINUTES)
-        val maxAgeOfPaymentBeforeExpiry =
-            parkingFeeConfigRepository.maxAgeBeforePaymentExpiry.toMinutes()
-
-        return ageOfPayment > maxAgeOfPaymentBeforeExpiry
-    }
+    private fun isExpired(payment: Payment): Boolean =
+        payment.isExpired(parkingFeeConfigRepository.maxAgeBeforePaymentExpiry)
 }

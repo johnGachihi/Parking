@@ -2,7 +2,7 @@ package com.johngachihi.parking.repositories
 
 import com.johngachihi.parking.entities.visit.FinishedVisit
 import com.johngachihi.parking.entities.visit.OngoingVisit
-import com.johngachihi.parking.entities.Payment
+import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.repositories.visit.FinishVisitRepositoryFragmentImpl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

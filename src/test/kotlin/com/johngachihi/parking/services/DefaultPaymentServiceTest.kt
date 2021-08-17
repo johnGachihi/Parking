@@ -1,7 +1,7 @@
 package com.johngachihi.parking.services
 
 import com.johngachihi.parking.entities.visit.OngoingVisit
-import com.johngachihi.parking.entities.Payment
+import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.entities.visit.timeOfStay
 import com.johngachihi.parking.minutesAgo
 import com.johngachihi.parking.repositories.config.ParkingFeeConfigRepository

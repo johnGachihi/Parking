@@ -2,7 +2,7 @@ package com.johngachihi.parking.repositories.visit
 
 import com.johngachihi.parking.entities.visit.FinishedVisit
 import com.johngachihi.parking.entities.visit.OngoingVisit
-import com.johngachihi.parking.entities.Payment
+import com.johngachihi.parking.entities.payment.Payment
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.Instant

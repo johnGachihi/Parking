@@ -1,4 +1,4 @@
-package com.johngachihi.parking.entities
+package com.johngachihi.parking.entities.payment
 
 import com.johngachihi.parking.entities.visit.Visit
 import org.hibernate.annotations.CreationTimestamp

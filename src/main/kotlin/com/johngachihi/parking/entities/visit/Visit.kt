@@ -1,6 +1,6 @@
 package com.johngachihi.parking.entities.visit
 
-import com.johngachihi.parking.entities.Payment
+import com.johngachihi.parking.entities.payment.Payment
 import org.hibernate.annotations.CreationTimestamp
 import java.time.Instant
 import javax.persistence.*
