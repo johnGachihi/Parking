@@ -20,7 +20,7 @@ class DefaultExitService(
     @Autowired
     private val ongoingVisitRepository: OngoingVisitRepository,
     @Autowired
-    private val paymentService: PaymentService
+    private val parkingFeeCalculatorService: ParkingFeeCalculatorService
 ) : ExitService {
     @Transactional
     override fun finishVisit(ticketCode: Long) {
@@ -29,7 +29,7 @@ class DefaultExitService(
                 "The ticket code provided is not for an ongoing visit."
             )
 
-        val parkingFee = paymentService.calculateParkingFee(ongoingVisit)
+        val parkingFee = parkingFeeCalculatorService.calculateFee(ongoingVisit)
         if (parkingFee > 0) {
             throw UnpaidFeeException(
                 "Fee for visit with ticket-code ${ongoingVisit.ticketCode}" +

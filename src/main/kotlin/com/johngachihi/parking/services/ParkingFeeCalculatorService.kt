@@ -9,18 +9,19 @@ import com.johngachihi.parking.repositories.config.ParkingFeeConfigRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-interface PaymentService {
-    fun calculateParkingFee(ongoingVisit: OngoingVisit): Double
+interface ParkingFeeCalculatorService {
+    fun calculateFee(ongoingVisit: OngoingVisit): Double
 }
 
 @Service
-class DefaultPaymentService(
+class DefaultParkingFeeCalculatorService(
     @Autowired
     private val parkingTariffService: ParkingTariffService,
     @Autowired
     private val parkingFeeConfigRepository: ParkingFeeConfigRepository
-) : PaymentService {
-    override fun calculateParkingFee(ongoingVisit: OngoingVisit): Double {
+) : ParkingFeeCalculatorService {
+    override fun calculateFee(ongoingVisit: OngoingVisit): Double {
+        // Use entity logic
         if (ongoingVisit.payments.isEmpty())
             return parkingTariffService.getFee(ongoingVisit.timeOfStay)
 

@@ -17,9 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Duration
 import java.time.Instant
 
-@DisplayName("Test DefaultPaymentService")
+@DisplayName("Test DefaultParkingFeeCalculatorService")
 @ExtendWith(MockKExtension::class)
-internal class DefaultPaymentServiceTest {
+internal class DefaultParkingFeeCalculatorServiceTest {
     @MockK
     private lateinit var parkingTariffService: ParkingTariffService
 
@@ -27,7 +27,7 @@ internal class DefaultPaymentServiceTest {
     private lateinit var parkingFeeConfigRepository: ParkingFeeConfigRepository
 
     @InjectMockKs
-    private lateinit var paymentService: DefaultPaymentService
+    private lateinit var parkingFeeCalculatorService: DefaultParkingFeeCalculatorService
 
     @Nested
     @DisplayName("When no payments have been made for the OngoingVisit")
@@ -47,7 +47,7 @@ internal class DefaultPaymentServiceTest {
                 parkingTariffService.getFee(ongoingVisitWithoutPayments.timeOfStay)
             } returns expectedFee
 
-            val actualFee = paymentService.calculateParkingFee(ongoingVisitWithoutPayments)
+            val actualFee = parkingFeeCalculatorService.calculateFee(ongoingVisitWithoutPayments)
 
             assertThat(actualFee).isEqualTo(expectedFee)
         }
@@ -81,7 +81,7 @@ internal class DefaultPaymentServiceTest {
                 parkingTariffService.getFee(ongoingVisit.timeOfStay)
             } returns 10.0
 
-            val fee = paymentService.calculateParkingFee(ongoingVisit)
+            val fee = parkingFeeCalculatorService.calculateFee(ongoingVisit)
 
             assertThat(fee).isEqualTo(10.0 - (1.0 + 1.0))
         }
@@ -98,7 +98,7 @@ internal class DefaultPaymentServiceTest {
                 parkingFeeConfigRepository.maxAgeBeforePaymentExpiry
             } returns Duration.ofMinutes(20)
 
-            val fee = paymentService.calculateParkingFee(ongoingVisit)
+            val fee = parkingFeeCalculatorService.calculateFee(ongoingVisit)
 
             assertThat(fee).isEqualTo(0.0)
         }

@@ -24,7 +24,7 @@ internal class DefaultExitServiceTest {
     private lateinit var ongoingVisitRepository: OngoingVisitRepository
 
     @MockK
-    private lateinit var paymentService: PaymentService
+    private lateinit var parkingFeeCalculatorService: ParkingFeeCalculatorService
 
     @InjectMockKs
     private lateinit var exitService: DefaultExitService
@@ -59,7 +59,7 @@ internal class DefaultExitServiceTest {
             fun `And the OngoingVisit's due parking fee is greater than 0, then throws UnpaidFeeException`() {
                 val parkingFee = 122.0
                 every {
-                    paymentService.calculateParkingFee(ongoingVisit)
+                    parkingFeeCalculatorService.calculateFee(ongoingVisit)
                 } returns parkingFee
 
                 assertThatExceptionOfType(UnpaidFeeException::class.java)
@@ -73,7 +73,7 @@ internal class DefaultExitServiceTest {
             @Test
             fun `And the OngoingVisit has no due parking fee, then ends the OngoingVisit`() {
                 every {
-                    paymentService.calculateParkingFee(ongoingVisit)
+                    parkingFeeCalculatorService.calculateFee(ongoingVisit)
                 } returns 0.0
 
                 exitService.finishVisit(123)
