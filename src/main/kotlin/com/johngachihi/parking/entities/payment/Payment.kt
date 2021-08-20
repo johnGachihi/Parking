@@ -3,10 +3,7 @@ package com.johngachihi.parking.entities.payment
 import com.johngachihi.parking.entities.visit.Visit
 import org.hibernate.annotations.CreationTimestamp
 import java.time.Instant
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "payments")
@@ -25,4 +22,14 @@ open class Payment {
 
     @NotNull
     open var amount: Double? = null
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    open lateinit var status: Status
+
+    enum class Status {
+        STARTED,
+        SUCCESSFUL,
+        FAILURE,
+    }
 }

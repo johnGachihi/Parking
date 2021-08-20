@@ -4,7 +4,7 @@ import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.entities.visit.timeOfStay
 import com.johngachihi.parking.minutesAgo
-import com.johngachihi.parking.repositories.config.ParkingFeeConfigRepository
+import com.johngachihi.parking.repositories.settings.PaymentSettingsRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,7 +24,7 @@ internal class DefaultParkingFeeCalculatorServiceTest {
     private lateinit var parkingTariffService: ParkingTariffService
 
     @MockK
-    private lateinit var parkingFeeConfigRepository: ParkingFeeConfigRepository
+    private lateinit var paymentSettingsRepository: PaymentSettingsRepository
 
     @InjectMockKs
     private lateinit var parkingFeeCalculatorService: DefaultParkingFeeCalculatorService
@@ -74,7 +74,7 @@ internal class DefaultParkingFeeCalculatorServiceTest {
             }
 
             every {
-                parkingFeeConfigRepository.maxAgeBeforePaymentExpiry
+                paymentSettingsRepository.maxAgeBeforePaymentExpiry
             } returns Duration.ofMinutes(5)
 
             every {
@@ -95,7 +95,7 @@ internal class DefaultParkingFeeCalculatorServiceTest {
             }
 
             every {
-                parkingFeeConfigRepository.maxAgeBeforePaymentExpiry
+                paymentSettingsRepository.maxAgeBeforePaymentExpiry
             } returns Duration.ofMinutes(20)
 
             val fee = parkingFeeCalculatorService.calculateFee(ongoingVisit)

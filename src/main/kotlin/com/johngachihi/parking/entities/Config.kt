@@ -22,5 +22,5 @@ open class Config {
 
 // TODO: See why the @Table annotation causes warning when bootstrapping Hibernate
 @Entity
-@Table(name = "parking_fee_configuration")
+//@Table(name = "parking_fee_configuration")
 open class ParkingFeeConfig : Config()

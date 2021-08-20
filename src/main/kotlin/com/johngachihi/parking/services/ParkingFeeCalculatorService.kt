@@ -5,7 +5,7 @@ import com.johngachihi.parking.entities.payment.isExpired
 import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.entities.visit.timeOfStay
 import com.johngachihi.parking.entities.visit.totalAmountPaid
-import com.johngachihi.parking.repositories.config.ParkingFeeConfigRepository
+import com.johngachihi.parking.repositories.settings.PaymentSettingsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -18,7 +18,7 @@ class DefaultParkingFeeCalculatorService(
     @Autowired
     private val parkingTariffService: ParkingTariffService,
     @Autowired
-    private val parkingFeeConfigRepository: ParkingFeeConfigRepository
+    private val paymentSettingsRepository: PaymentSettingsRepository
 ) : ParkingFeeCalculatorService {
     override fun calculateFee(ongoingVisit: OngoingVisit): Double {
         // Use entity logic
@@ -37,5 +37,5 @@ class DefaultParkingFeeCalculatorService(
         ongoingVisit.payments.maxByOrNull { it.madeAt }
 
     private fun isExpired(payment: Payment): Boolean =
-        payment.isExpired(parkingFeeConfigRepository.maxAgeBeforePaymentExpiry)
+        payment.isExpired(paymentSettingsRepository.maxAgeBeforePaymentExpiry)
 }
