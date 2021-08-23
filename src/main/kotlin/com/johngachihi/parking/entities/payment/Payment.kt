@@ -29,7 +29,7 @@ open class Payment {
 
     enum class Status {
         STARTED,
-        SUCCESSFUL,
-        FAILURE,
+        COMPLETED,
+        CANCELLED,
     }
 }
