@@ -37,8 +37,14 @@ internal class FinishVisitRepositoryFragmentImplTest {
             })
 
         ongoingVisit.payments = listOf(
-            Payment().apply { amount = 111.1; visit = ongoingVisit },
-            Payment().apply { amount = 111.1; visit = ongoingVisit }
+            Payment().apply {
+                amount = 111.1
+                visit = ongoingVisit;
+            },
+            Payment().apply {
+                amount = 111.1
+                visit = ongoingVisit;
+            }
         )
 
         entityManager.persistAndFlush(ongoingVisit)

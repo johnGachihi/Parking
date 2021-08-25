@@ -6,6 +6,8 @@ import java.time.Instant
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
+// TODO: For all entities', synchronize nullability status in DB
+
 @Entity(name = "payments")
 open class Payment {
     @Id
@@ -22,14 +24,4 @@ open class Payment {
 
     @NotNull
     open var amount: Double? = null
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    open lateinit var status: Status
-
-    enum class Status {
-        STARTED,
-        COMPLETED,
-        CANCELLED,
-    }
 }

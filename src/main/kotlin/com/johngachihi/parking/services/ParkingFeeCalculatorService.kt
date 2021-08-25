@@ -21,7 +21,7 @@ class DefaultParkingFeeCalculatorService(
     private val paymentSettingsRepository: PaymentSettingsRepository
 ) : ParkingFeeCalculatorService {
     override fun calculateFee(ongoingVisit: OngoingVisit): Double {
-        // Use entity logic
+        // TODO: Use entity logic
         if (ongoingVisit.payments.isEmpty())
             return parkingTariffService.getFee(ongoingVisit.timeOfStay)
 
