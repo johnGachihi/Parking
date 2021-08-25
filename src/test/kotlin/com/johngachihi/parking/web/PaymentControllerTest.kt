@@ -54,11 +54,10 @@ internal class PaymentControllerTest {
 
             @Test
             fun `When request has a ticketCode that is less than 0, then returns a 400 response with validation error`() {
-                val startPaymentDto = StartPaymentDto(ticketCode = -1)
                 mockMvc.perform(
                     put("/payment/start-payment")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsBytes(startPaymentDto))
+                        .content(objectMapper.writeValueAsBytes(StartPaymentDto(ticketCode = -1)))
                 )
                     .andExpect(status().isBadRequest)
                     .andExpect(
@@ -86,8 +85,6 @@ internal class PaymentControllerTest {
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsBytes(startPaymentDto))
                 )
-                    .andExpect(status().isOk)
-//                    .andExpect(content().)
 
                 verify(paymentService, times(1))
                     .startPayment(startPaymentDto)

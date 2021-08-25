@@ -6,6 +6,8 @@ import java.time.Instant
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
+// TODO: For all entities', synchronize nullability status in DB
+
 @Entity(name = "payments")
 open class Payment {
     @Id
@@ -18,7 +20,9 @@ open class Payment {
 
     @NotNull
     @CreationTimestamp
-    open var madeAt: Instant = Instant.now()
+    open var startedAt: Instant = Instant.now()
+
+    open lateinit var finishedAt: Instant
 
     @NotNull
     open var amount: Double? = null

@@ -76,8 +76,8 @@ internal class OngoingVisitExtKtTest {
         @Test
         fun `When the OngoingVisit has at least one payment, returns the latest one`() {
             val payments = listOf(
-                Payment().apply { madeAt = 10.minutesAgo },
-                Payment().apply { madeAt = 20.minutesAgo },
+                Payment().apply { finishedAt = 10.minutesAgo },
+                Payment().apply { finishedAt = 20.minutesAgo },
             )
             val ongoingVisit = OngoingVisit().apply { this.payments = payments }
 
@@ -104,7 +104,7 @@ internal class OngoingVisitExtKtTest {
             fun `And the latest payment has expired, then returns false`() {
                 val maxAgeBeforePaymentExpiration = 10.minutes
                 val ongoingVisit = OngoingVisit().apply {
-                    payments = listOf(Payment().apply { madeAt = 20.minutesAgo })
+                    payments = listOf(Payment().apply { finishedAt = 20.minutesAgo })
                 }
 
                 assertThat(ongoingVisit.isInExitAllowancePeriod(maxAgeBeforePaymentExpiration))
@@ -115,7 +115,7 @@ internal class OngoingVisitExtKtTest {
             fun `And the latest payment has not expired, then returns true`() {
                 val maxAgeBeforePaymentExpiration = 20.minutes
                 val ongoingVisit = OngoingVisit().apply {
-                    payments = listOf(Payment().apply { madeAt = 10.minutesAgo })
+                    payments = listOf(Payment().apply { finishedAt = 10.minutesAgo })
                 }
 
                 assertThat(ongoingVisit.isInExitAllowancePeriod(maxAgeBeforePaymentExpiration))

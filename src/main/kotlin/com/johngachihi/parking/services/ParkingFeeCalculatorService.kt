@@ -21,7 +21,7 @@ class DefaultParkingFeeCalculatorService(
     private val paymentSettingsRepository: PaymentSettingsRepository
 ) : ParkingFeeCalculatorService {
     override fun calculateFee(ongoingVisit: OngoingVisit): Double {
-        // Use entity logic
+        // TODO: Use entity logic
         if (ongoingVisit.payments.isEmpty())
             return parkingTariffService.getFee(ongoingVisit.timeOfStay)
 
@@ -34,7 +34,7 @@ class DefaultParkingFeeCalculatorService(
     }
 
     private fun getLatestPayment(ongoingVisit: OngoingVisit) =
-        ongoingVisit.payments.maxByOrNull { it.madeAt }
+        ongoingVisit.payments.maxByOrNull { it.finishedAt }
 
     private fun isExpired(payment: Payment): Boolean =
         payment.isExpired(paymentSettingsRepository.maxAgeBeforePaymentExpiry)
