@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 interface PaymentService {
     /**
-     * @throws VisitInExitAllowancePeriodException
+     * @throws IllegalPaymentException
      * @throws InvalidTicketCodeException
      */
     fun startPayment(startPaymentDto: StartPaymentDto): Payment
@@ -38,7 +38,7 @@ class DefaultPaymentService(
 
         val maxAgeBeforePaymentExpiry = paymentSettingsRepository.maxAgeBeforePaymentExpiry
         if (ongoingVisit.isInExitAllowancePeriod(maxAgeBeforePaymentExpiry)) {
-            throw VisitInExitAllowancePeriodException()
+            throw IllegalPaymentException("A payment cannot be made for a visit that is in an exit allowance period")
         }
 
         val parkingFee = parkingFeeCalculatorService.calculateFee(ongoingVisit)

@@ -1,4 +1,4 @@
 package com.johngachihi.parking
 
-class InvalidTicketCodeException(msg: String) : Exception(msg)
-class UnpaidFeeException(msg: String) : Exception(msg)
+class InvalidTicketCodeException(override val message: String) : RuntimeException()
+class UnpaidFeeException(msg: String) : RuntimeException(msg)

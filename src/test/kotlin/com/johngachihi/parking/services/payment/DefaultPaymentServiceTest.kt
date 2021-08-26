@@ -57,7 +57,7 @@ internal class DefaultPaymentServiceTest {
         @Test
         @DisplayName(
             "When ticketCode provided is for an OngoingVisit in a exit-allowance " +
-                    "period, then throw VisitInExitAllowancePeriodException"
+                    "period, then throw IllegalPaymentException"
         )
         fun testWhenOngoingVisitIsInExitAllowancePeriod() {
             val startPaymentDto = StartPaymentDto(ticketCode = 1234L)
@@ -71,8 +71,9 @@ internal class DefaultPaymentServiceTest {
                 paymentSettingsRepository.maxAgeBeforePaymentExpiry
             } returns 20.minutes
 
-            assertThatExceptionOfType(VisitInExitAllowancePeriodException::class.java)
+            assertThatExceptionOfType(IllegalPaymentException::class.java)
                 .isThrownBy { paymentService.startPayment(startPaymentDto) }
+                .withMessage("A payment cannot be made for a visit that is in an exit allowance period")
         }
 
         @Nested
