@@ -20,20 +20,8 @@ open class Payment {
 
     @NotNull
     @CreationTimestamp
-    open var startedAt: Instant = Instant.now()
-
-    open lateinit var finishedAt: Instant
+    open var madeAt: Instant = Instant.now()
 
     @NotNull
     open var amount: Double? = null
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    open lateinit var status: Status
-
-    enum class Status {
-        STARTED,
-        COMPLETED,
-        CANCELLED,
-    }
 }

@@ -1,4 +1,4 @@
-package com.johngachihi.parking.repositories
+package com.johngachihi.parking.repositories.payment
 
 import com.johngachihi.parking.entities.payment.Payment
 import org.springframework.data.jpa.repository.JpaRepository

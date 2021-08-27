@@ -20,7 +20,7 @@ val OngoingVisit.hasAtLeastOnePayment: Boolean
     get() = this.payments.isNotEmpty()
 
 val OngoingVisit.latestPayment: Payment
-    get() = payments.maxByOrNull { it.finishedAt }
+    get() = payments.maxByOrNull { it.madeAt }
         ?: throw NoSuchElementException()
 
 fun OngoingVisit.isInExitAllowancePeriod(

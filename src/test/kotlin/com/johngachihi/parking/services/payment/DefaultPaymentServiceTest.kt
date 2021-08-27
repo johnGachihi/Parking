@@ -2,10 +2,12 @@ package com.johngachihi.parking.services.payment
 
 import com.johngachihi.parking.InvalidTicketCodeException
 import com.johngachihi.parking.entities.payment.Payment
+import com.johngachihi.parking.entities.payment.PaymentSession
 import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.minutes
 import com.johngachihi.parking.minutesAgo
-import com.johngachihi.parking.repositories.PaymentRepository
+import com.johngachihi.parking.repositories.payment.PaymentRepository
+import com.johngachihi.parking.repositories.payment.PaymentSessionRepository
 import com.johngachihi.parking.repositories.settings.PaymentSettingsRepository
 import com.johngachihi.parking.repositories.visit.OngoingVisitRepository
 import com.johngachihi.parking.services.ParkingFeeCalculatorService
@@ -34,6 +36,9 @@ internal class DefaultPaymentServiceTest {
     private lateinit var paymentRepository: PaymentRepository
 
     @MockK
+    private lateinit var paymentSessionRepository: PaymentSessionRepository
+
+    @MockK
     private lateinit var parkingFeeCalculatorService: ParkingFeeCalculatorService
 
     @InjectMockKs
@@ -56,7 +61,7 @@ internal class DefaultPaymentServiceTest {
 
         @Test
         @DisplayName(
-            "When ticketCode provided is for an OngoingVisit in a exit-allowance " +
+            "When ticketCode provided is for an OngoingVisit in an exit-allowance " +
                     "period, then throw IllegalPaymentException"
         )
         fun testWhenOngoingVisitIsInExitAllowancePeriod() {
@@ -64,12 +69,13 @@ internal class DefaultPaymentServiceTest {
             every {
                 ongoingVisitRepository.findByTicketCode(startPaymentDto.ticketCode)
             } returns OngoingVisit().apply {
-                payments = listOf(Payment().apply { finishedAt = 10.minutesAgo })
-            }
+                payments = listOf(Payment().apply { madeAt = 10.minutesAgo })
+            } // Returns an OngoingVisit whose latest payment was made 10 minutes ago
 
             every {
                 paymentSettingsRepository.maxAgeBeforePaymentExpiry
             } returns 20.minutes
+            // The maximum age of a payment before it expires is 20 minutes
 
             assertThatExceptionOfType(IllegalPaymentException::class.java)
                 .isThrownBy { paymentService.startPayment(startPaymentDto) }
@@ -97,12 +103,16 @@ internal class DefaultPaymentServiceTest {
                 } returns Payment()
 
                 every {
+                    paymentSessionRepository.save(any())
+                } returns PaymentSession()
+
+                every {
                     parkingFeeCalculatorService.calculateFee(ongoingVisit)
                 } returns 0.0
             }
 
             @Test
-            fun `then creates and stores a new Payment with 'amount' as calculated by ParkingFeeCalculatorService`() {
+            fun `then creates and stores a new PaymentSession with 'amount' as calculated by ParkingFeeCalculatorService`() {
                 every {
                     parkingFeeCalculatorService.calculateFee(ongoingVisit)
                 } returns 987.0
@@ -110,42 +120,42 @@ internal class DefaultPaymentServiceTest {
                 paymentService.startPayment(startPaymentDto)
 
                 verify {
-                    paymentRepository.save(match { it.amount == 987.0 })
+                    paymentSessionRepository.save(match { it.amount == 987.0 })
                 }
             }
 
             @Test
-            fun `then creates and stores a new Payment with status STARTED`() {
+            fun `then creates and stores a new PaymentSession with status PENDING`() {
                 paymentService.startPayment(startPaymentDto)
 
                 verify {
-                    paymentRepository.save(match { it.status == Payment.Status.STARTED })
+                    paymentSessionRepository.save(match { it.status == PaymentSession.Status.PENDING })
                 }
             }
 
             @Test
             @DisplayName(
-                "then creates and stores a new Payment with 'visit' " +
+                "then creates and stores a new PaymentSession with 'visit' " +
                         "property being the OngoingVisit for the ticket code provided"
             )
             fun testCreatedPaymentVisitProperty() {
                 paymentService.startPayment(startPaymentDto)
 
                 verify {
-                    paymentRepository.save(match { it.visit == ongoingVisit })
+                    paymentSessionRepository.save(match { it.visit == ongoingVisit })
                 }
             }
 
             @Test
-            fun `then returns created and persisted Payment`() {
-                val expectedPayment = Payment()
+            fun `then returns created and persisted PaymentSession`() {
+                val expectedPaymentSession = PaymentSession()
                 every {
-                    paymentRepository.save(any())
-                } returns expectedPayment
+                    paymentSessionRepository.save(any())
+                } returns expectedPaymentSession
 
-                val actualPayment = paymentService.startPayment(startPaymentDto)
+                val actualPaymentSession = paymentService.startPayment(startPaymentDto)
 
-                assertThat(actualPayment).isEqualTo(expectedPayment)
+                assertThat(actualPaymentSession).isEqualTo(expectedPaymentSession)
             }
         }
     }

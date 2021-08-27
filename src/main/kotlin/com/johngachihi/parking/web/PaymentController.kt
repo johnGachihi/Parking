@@ -1,7 +1,6 @@
 package com.johngachihi.parking.web
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,9 +18,8 @@ class PaymentController(
 ) {
     @JsonAnyGetter
     @PutMapping("/start-payment")
-    fun startPayment(@Valid @RequestBody input: StartPaymentDto): Payment {
-        return paymentService.startPayment(input)
-    }
+    fun startPayment(@Valid @RequestBody input: StartPaymentDto) =
+        paymentService.startPayment(input)
 }
 
 

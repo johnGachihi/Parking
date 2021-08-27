@@ -106,7 +106,7 @@ internal class DefaultParkingFeeCalculatorServiceTest {
         private fun makePayment(madeAt: Instant, amount: Double = 100.0) =
             Payment().apply {
                 this.amount = amount
-                this.finishedAt = madeAt
+                this.madeAt = madeAt
             }
     }
 }

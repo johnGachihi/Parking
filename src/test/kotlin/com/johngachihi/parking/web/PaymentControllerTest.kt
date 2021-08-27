@@ -2,11 +2,11 @@ package com.johngachihi.parking.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.johngachihi.parking.InvalidTicketCodeException
-import com.johngachihi.parking.entities.payment.Payment
-import com.johngachihi.parking.minutesAgo
+import com.johngachihi.parking.entities.payment.PaymentSession
+import com.johngachihi.parking.entities.visit.OngoingVisit
+import com.johngachihi.parking.services.payment.IllegalPaymentException
 import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
-import com.johngachihi.parking.services.payment.IllegalPaymentException
 import com.johngachihi.parking.web.exceptionhandling.IllegalPaymentErrorResponse
 import com.johngachihi.parking.web.exceptionhandling.InvalidTicketCodeErrorResponse
 import org.assertj.core.api.Assertions.assertThat
@@ -22,7 +22,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(controllers = [PaymentController::class])
 internal class PaymentControllerTest {
@@ -70,10 +71,8 @@ internal class PaymentControllerTest {
                     )
             }
 
-            private fun hasViolation(field: String, errorMsg: String): ResultMatcher = jsonPath(
-                "$.violations.$field",
-                hasItem(errorMsg)
-            )
+            private fun hasViolation(field: String, errorMsg: String): ResultMatcher =
+                jsonPath("$.violations.$field", hasItem(errorMsg))
         }
 
         @Nested
@@ -127,24 +126,17 @@ internal class PaymentControllerTest {
         }
 
         @Test
-        fun `When attempt to start a payment succeeds, then returns the new payment`() {
+        fun `When attempt to start a payment session succeeds, then returns the new PaymentSession data`() {
             val startPaymentDto = StartPaymentDto(ticketCode = 123)
-            val expectedPayment = Payment().apply {
-                status = Payment.Status.STARTED
 
-                // FIXME: URGENT: This should be removed from here after
-                //        dividing Payment entity into PendingPayment and CompletePayment.
-                //        The Payment returned by this endpoint must be a PendingPayment
-                //        and must therefore not have a finishedAt time.
-                finishedAt = 10.minutesAgo
-            }
+            val expectedPaymentSession = makePaymentSession()
 
             `when`(paymentService.startPayment(startPaymentDto))
-                .thenReturn(expectedPayment)
+                .thenReturn(expectedPaymentSession)
 
             makeStartPaymentRequest(startPaymentDto)
                 .andExpect(status().isOk)
-                .andExpect(jsonEqualTo(expectedPayment))
+                .andExpect(jsonEqualTo(expectedPaymentSession))
         }
 
 
@@ -170,6 +162,11 @@ internal class PaymentControllerTest {
                             "but was: <${it.response.contentAsString}>"
                 )
                 .isEqualTo(objectMapper.writeValueAsString(other))
+        }
+
+        private fun makePaymentSession() = PaymentSession().apply {
+            visit = OngoingVisit()
+            status = PaymentSession.Status.PENDING
         }
     }
 }

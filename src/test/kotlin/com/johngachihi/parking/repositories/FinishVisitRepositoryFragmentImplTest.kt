@@ -40,12 +40,10 @@ internal class FinishVisitRepositoryFragmentImplTest {
             Payment().apply {
                 amount = 111.1
                 visit = ongoingVisit;
-                status = Payment.Status.COMPLETED
             },
             Payment().apply {
                 amount = 111.1
                 visit = ongoingVisit;
-                status = Payment.Status.COMPLETED
             }
         )
 

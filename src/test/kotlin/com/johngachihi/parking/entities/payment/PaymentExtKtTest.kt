@@ -15,7 +15,7 @@ internal class PaymentExtKtTest {
         @Test
         fun `When the payment is older than the maxAgeBeforePaymentExpiry, then returns true`() {
             val payment = Payment().apply {
-                finishedAt = 20.minutesAgo
+                madeAt = 20.minutesAgo
             }
             val maxAgeBeforePaymentExpiry = 10.minutes
 
@@ -26,7 +26,7 @@ internal class PaymentExtKtTest {
         @Test
         fun `When the payment is not older than the maxAgeBeforePaymentExpiry, then returns false`() {
             val payment = Payment().apply {
-                finishedAt = 10.minutesAgo
+                madeAt = 10.minutesAgo
             }
             val maxAgeBeforePaymentExpiry = 20.minutes
 
@@ -37,7 +37,7 @@ internal class PaymentExtKtTest {
         @Test
         fun `When the payment's age is the same as the maxAgeBeforePaymentExpiry, then returns false`() {
             val payment = Payment().apply {
-                finishedAt = 10.minutesAgo
+                madeAt = 10.minutesAgo
             }
             val maxAgeBeforePaymentExpiry = 10.minutes
 

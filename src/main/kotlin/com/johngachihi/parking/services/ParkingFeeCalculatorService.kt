@@ -34,7 +34,7 @@ class DefaultParkingFeeCalculatorService(
     }
 
     private fun getLatestPayment(ongoingVisit: OngoingVisit) =
-        ongoingVisit.payments.maxByOrNull { it.finishedAt }
+        ongoingVisit.payments.maxByOrNull { it.madeAt }
 
     private fun isExpired(payment: Payment): Boolean =
         payment.isExpired(paymentSettingsRepository.maxAgeBeforePaymentExpiry)
