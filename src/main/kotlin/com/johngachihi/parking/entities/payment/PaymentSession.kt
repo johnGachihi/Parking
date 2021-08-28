@@ -39,5 +39,6 @@ open class PaymentSession {
         PENDING,
         COMPLETED,
         CANCELLED,
+        EXPIRED
     }
 }
