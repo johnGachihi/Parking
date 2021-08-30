@@ -42,6 +42,7 @@ class DefaultPaymentService(
     @Autowired
     private val paymentSessionRepo: PaymentSessionRepository
 ) : PaymentService {
+    // TODO: Add idempotency
     override fun startPayment(startPaymentDto: StartPaymentDto): PaymentSession {
         val ongoingVisit = ongoingVisitRepo.findByTicketCode(startPaymentDto.ticketCode)
             ?: throw InvalidTicketCodeException(

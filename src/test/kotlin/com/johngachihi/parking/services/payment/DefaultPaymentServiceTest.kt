@@ -185,7 +185,8 @@ internal class DefaultPaymentServiceTest {
 
         @Test
         @DisplayName(
-            "When paymentSessionId provided belongs to a COMPLETE PaymentSession, " +
+            "When paymentSessionId provided belongs to a PaymentSession " +
+                    "having a status that is not PENDING, " +
                     "then throws an IllegalPaymentAttemptException with appropriate message"
         )
         fun testWhenPaymentSessionIdProvidedDoesNotBelongToAPendingPaymentSession() {
@@ -213,8 +214,8 @@ internal class DefaultPaymentServiceTest {
 
         @Test
         @DisplayName(
-            "When provided paymentSessionId is for a payment that is " +
-                    "older than the set max-payment-session-age, " +
+            "When provided paymentSessionId is for a PaymentSession marked PENDING " +
+                    "but that is older than the set max-payment-session-age, " +
                     "then throws IllegalPaymentAttemptException with appropriate message"
         )
         fun `testWhenPaymentSessionTooOld`() {
@@ -237,7 +238,8 @@ internal class DefaultPaymentServiceTest {
         @Test
         @DisplayName(
             "When the PaymentSession is valid, " +
-                    "then create and persist a Payment with the amount and visit fields from the PaymentSession"
+                    "then create and persist a Payment with the " +
+                    "amount and visit fields from the PaymentSession"
         )
         fun testWhenPaymentSessionValid() {
             val ongoingVisit = OngoingVisit()
@@ -263,9 +265,11 @@ internal class DefaultPaymentServiceTest {
             paymentService.completePayment(completePaymentDto)
 
             // THEN
-            verify { paymentRepository.save(match {
-                it.visit == ongoingVisit && it.amount == 100.0
-            }) }
+            verify {
+                paymentRepository.save(match {
+                    it.visit == ongoingVisit && it.amount == 100.0
+                })
+            }
         }
     }
 }
