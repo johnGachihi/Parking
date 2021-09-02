@@ -10,7 +10,6 @@ import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
 import com.johngachihi.parking.web.exceptionhandling.IllegalPaymentAttemptErrorResponse
 import com.johngachihi.parking.web.exceptionhandling.InvalidTicketCodeErrorResponse
-import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers.hasItem
 import org.junit.jupiter.api.DisplayName
@@ -24,7 +23,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(controllers = [PaymentController::class])
 internal class PaymentControllerTest {
@@ -217,9 +217,6 @@ internal class PaymentControllerTest {
         }
     }
 
-
-    private fun hasViolation(field: String, errorMsg: String): ResultMatcher =
-        jsonPath("$.violations.$field", hasItem(errorMsg))
 
     private fun makeRequest(url: String, requestInput: Any): ResultActions {
         return mockMvc.perform(
