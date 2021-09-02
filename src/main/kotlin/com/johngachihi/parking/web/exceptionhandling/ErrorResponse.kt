@@ -17,5 +17,5 @@ abstract class ErrorResponse {
     val statusCode: Int
         get() = status.value()
 
-    abstract val detail: String
+    abstract val detail: String?
 }

@@ -44,7 +44,7 @@ class DefaultPaymentSettingsRepository(
         } catch (e: IllegalFormatException) {
             throw IllegalSettingException(settingReadableName, e)
         } catch (e: NumberFormatException) {
-            throw IllegalSettingException("Max Age Before Payment Expiry (minutes)", e)
+            throw IllegalSettingException(settingReadableName, e)
         }
     }
 }
