@@ -8,6 +8,11 @@ import org.springframework.transaction.annotation.Transactional
 
 interface ParkingTariffSettingsService {
     fun getParkingTariffSettings(): List<ParkingTariff>
+
+    /**
+     * @throws IllegalArgumentException when newParkingTariffSettings has
+     *          ParkingTariffs with similar (not unique) upperLimits
+     */
     fun overwriteParkingTariffSettings(newParkingTariffSettings: List<ParkingTariff>)
 }
 
@@ -21,8 +26,16 @@ class DefaultParkingTariffSettingsService(
 
     @Transactional
     override fun overwriteParkingTariffSettings(newParkingTariffSettings: List<ParkingTariff>) {
+        validateParkingTariffSettings(newParkingTariffSettings)
+
         parkingTariffSettingsRepository.deleteAll()
         parkingTariffSettingsRepository.saveAll(newParkingTariffSettings)
     }
 
+    private fun validateParkingTariffSettings(parkingTariffSettings: List<ParkingTariff>) {
+        if (!isUpperLimitUnique(parkingTariffSettings))
+            throw IllegalArgumentException(
+                "The upperLimits for the parking-tariff settings should be unique"
+            )
+    }
 }

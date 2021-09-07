@@ -126,6 +126,30 @@ internal class ParkingTariffSettingsControllerTest {
                         )
                     )
             }
+
+            @Test
+            @DisplayName(
+                "When newParkingTariffSettings has ParkingTariff entities with " +
+                        "similar (not unique) upperLimits, then returns a 400 " +
+                        "response with appropriate error message"
+            )
+            fun testWhenNewParkingTariffSettingsHasParkingTariffsWithSimilarUpperLimits() {
+                val requestInput = OverwriteParkingTariffSettingsDto(
+                    newParkingTariffSettings = listOf(
+                        ParkingTariff().apply { upperLimit = 10.minutes },
+                        ParkingTariff().apply { upperLimit = 10.minutes },
+                    )
+                )
+
+                makeRequest(requestInput)
+                    .andExpect(status().isBadRequest)
+                    .andExpect(
+                        hasViolation(
+                            "newParkingTariffSettings",
+                            "Upper limits must be unique"
+                        )
+                    )
+            }
         }
 
         @Nested

@@ -5,6 +5,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice
 class ValidationErrorAdvice {
@@ -15,6 +16,17 @@ class ValidationErrorAdvice {
             keySelector = { it.field },
             valueTransform = { it.defaultMessage }
         )
+        return ValidationErrorResponse(violations)
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleValidationError(e: ConstraintViolationException): ValidationErrorResponse {
+        val violations = e.constraintViolations.groupBy(
+            keySelector = { it.propertyPath.toString() },
+            valueTransform = { it.message }
+        )
+
         return ValidationErrorResponse(violations)
     }
 }

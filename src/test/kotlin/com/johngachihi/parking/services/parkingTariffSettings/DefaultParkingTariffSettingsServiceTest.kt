@@ -8,11 +8,12 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verifyOrder
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import javax.validation.ConstraintViolationException
 
 @DisplayName("Test DefaultParkingTariffSettingsService")
 @ExtendWith(MockKExtension::class)
@@ -51,6 +52,24 @@ internal class DefaultParkingTariffSettingsServiceTest {
             ParkingTariff().apply { upperLimit = 10.minutes; fee = 10.0 },
             ParkingTariff().apply { upperLimit = 20.minutes; fee = 20.0 }
         )
+
+        @Test
+        @DisplayName(
+            "When parking tariff settings contains ParkingTariff with similar " +
+                    "(not unique) upperLimit, then throws IllegalArgumentException"
+        )
+        fun testWhenParkingTariffSettingsContainsParkingTariffsWithSimilarUpperLimit() {
+            val parkingTariffData = listOf(
+                ParkingTariff().apply { upperLimit = 10.minutes; fee = 10.0 },
+                ParkingTariff().apply { upperLimit = 10.minutes; fee = 10.0 }
+            )
+
+            assertThatExceptionOfType(IllegalArgumentException::class.java)
+                .isThrownBy {
+                    parkingTariffSettingsService.overwriteParkingTariffSettings(parkingTariffData)
+                }
+                .withMessage("The upperLimits for the parking-tariff settings should be unique")
+        }
 
         @Test
         fun `Deletes current parking tariff data then inserts new parking tariff data`() {
