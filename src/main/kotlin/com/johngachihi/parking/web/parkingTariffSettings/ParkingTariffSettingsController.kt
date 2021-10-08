@@ -8,6 +8,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/settings/parking-tariff")
+@CrossOrigin
 class ParkingTariffSettingsController(
     @Autowired private val parkingTariffSettingsService: ParkingTariffSettingsService
 ) {
