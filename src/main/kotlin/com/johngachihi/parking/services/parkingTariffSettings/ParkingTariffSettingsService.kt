@@ -29,6 +29,15 @@ class DefaultParkingTariffSettingsService(
         validateParkingTariffSettings(newParkingTariffSettings)
 
         parkingTariffSettingsRepository.deleteAll()
+        /*
+        Required here because Hibernate flushes Insert operations
+        before Delete operations. This means that, because the new
+        settings will be inserted while the previous ones are still
+        present, if the new settings contain an entry with an
+        upperLimit value that is equal to one from the previous
+        settings, a unique-constraint-violation will be thrown
+        */
+        parkingTariffSettingsRepository.flush()
         parkingTariffSettingsRepository.saveAll(newParkingTariffSettings)
     }
 
