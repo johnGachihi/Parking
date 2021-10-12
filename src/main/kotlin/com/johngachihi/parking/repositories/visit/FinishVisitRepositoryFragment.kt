@@ -31,6 +31,7 @@ class FinishVisitRepositoryFragmentImpl(
             paymentsBuffer.add(payment)
         }
 
+        // TODO: Check if these payments get saved
         finishedVisit.payments = paymentsBuffer
 
         entityManager.remove(ongoingVisit)

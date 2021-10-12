@@ -4,14 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.johngachihi.parking.InvalidTicketCodeException
 import com.johngachihi.parking.entities.payment.PaymentSession
 import com.johngachihi.parking.entities.visit.OngoingVisit
+import com.johngachihi.parking.minutes
 import com.johngachihi.parking.services.payment.CompletePaymentDto
 import com.johngachihi.parking.services.payment.IllegalPaymentAttemptException
 import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
 import com.johngachihi.parking.web.exceptionhandling.IllegalPaymentAttemptErrorResponse
 import com.johngachihi.parking.web.exceptionhandling.InvalidTicketCodeErrorResponse
+import com.johngachihi.parking.web.payment.PaymentController
+import com.johngachihi.parking.web.payment.StartPaymentOutputDto
+import com.johngachihi.parking.web.payment.StartPaymentOutputDtoAssembler
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.CoreMatchers.hasItem
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -23,8 +26,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.Instant
 
 @WebMvcTest(controllers = [PaymentController::class])
 internal class PaymentControllerTest {
@@ -36,6 +39,9 @@ internal class PaymentControllerTest {
 
     @MockBean
     private lateinit var paymentService: PaymentService
+
+    @MockBean
+    private lateinit var startPaymentOutputDtoAssembler: StartPaymentOutputDtoAssembler
 
     @Nested
     @DisplayName("Test /payment/start-payment")
@@ -117,21 +123,33 @@ internal class PaymentControllerTest {
                     .andExpect(status().isBadRequest)
                     .andExpect(jsonEqualTo(expectedInvalidTicketCodeErrorResponse))
             }
-        }
 
-        // TODO: Should this be in the nested test class above
-        @Test
-        fun `When attempt to start a payment session succeeds, then returns the new PaymentSession data`() {
-            val startPaymentDto = StartPaymentDto(ticketCode = 123)
+            @Test
+            @DisplayName(
+                "When attempt to start a payment session succeeds," +
+                        "then returns appropriate StartPaymentOutputDto"
+            )
+            fun testWhenStartingPaymentSessionSucceeds() {
+                val startPaymentDto = StartPaymentDto(ticketCode = 123)
 
-            val expectedPaymentSession = makePaymentSession()
+                val paymentSession = makePaymentSession()
+                val expectedStartPaymentOutputDto = StartPaymentOutputDto(
+                    paymentSessionId = 1,
+                    paymentSessionExpiryTime = Instant.now().plus(10.minutes),
+                    paymentAmount = 100.0,
+                    ongoingVisitTimeOfStay = 20.minutes
+                )
 
-            `when`(paymentService.startPayment(startPaymentDto))
-                .thenReturn(expectedPaymentSession)
+                `when`(paymentService.startPayment(startPaymentDto))
+                    .thenReturn(paymentSession)
 
-            makeStartPaymentRequest(startPaymentDto)
-                .andExpect(status().isOk)
-                .andExpect(jsonEqualTo(expectedPaymentSession))
+                `when`(startPaymentOutputDtoAssembler.assemble(paymentSession))
+                    .thenReturn(expectedStartPaymentOutputDto)
+
+                makeStartPaymentRequest(startPaymentDto)
+                    .andExpect(status().isOk)
+                    .andExpect(jsonEqualTo(expectedStartPaymentOutputDto))
+            }
         }
 
 

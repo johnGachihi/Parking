@@ -6,9 +6,11 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 
+// TODO: Add Web exception-handling for server errors
+
 @SpringBootApplication(exclude = [ErrorMvcAutoConfiguration::class])
 @EnableConfigurationProperties(ModbusTcpEndpointProperties::class)
-class ParkingApplication
+open class ParkingApplication
 
 fun main(args: Array<String>) {
     runApplication<ParkingApplication>(*args)

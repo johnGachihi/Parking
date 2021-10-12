@@ -1,4 +1,4 @@
-package com.johngachihi.parking.web
+package com.johngachihi.parking.web.payment
 
 import com.johngachihi.parking.services.payment.CompletePaymentDto
 import com.johngachihi.parking.services.payment.PaymentService
@@ -14,11 +14,15 @@ import javax.validation.Valid
 @RequestMapping("/payment")
 class PaymentController(
     @Autowired
-    private val paymentService: PaymentService
+    private val paymentService: PaymentService,
+    @Autowired
+    private val startPaymentOutputDtoAssembler: StartPaymentOutputDtoAssembler
 ) {
     @PutMapping("/start-payment")
     fun startPayment(@Valid @RequestBody input: StartPaymentDto) =
-        paymentService.startPayment(input)
+        startPaymentOutputDtoAssembler.assemble(
+            paymentService.startPayment(input)
+        )
 
     @PutMapping("/complete-payment")
     fun completePayment(@Valid @RequestBody input: CompletePaymentDto) {
