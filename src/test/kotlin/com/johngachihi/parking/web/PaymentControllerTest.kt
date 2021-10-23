@@ -63,7 +63,11 @@ internal class PaymentControllerTest {
             }
 
             @Test
-            fun `When request has a ticketCode that is less than 0, then returns a 400 response with validation error`() {
+            @DisplayName(
+                "When request has a ticketCode that is less than 0," +
+                        "then returns a 400 response with validation error"
+            )
+            fun whenRequestHasTicketCodeIsLessThanZero() {
                 makeStartPaymentRequest(StartPaymentDto(ticketCode = -1))
                     .andExpect(status().isBadRequest)
                     .andExpect(
@@ -137,7 +141,9 @@ internal class PaymentControllerTest {
                     paymentSessionId = 1,
                     paymentSessionExpiryTime = Instant.now().plus(10.minutes),
                     paymentAmount = 100.0,
-                    ongoingVisitTimeOfStay = 20.minutes
+                    ongoingVisitTimeOfStay = 20.minutes,
+                    ongoingVisitEntryTime = Instant.now().minus(20.minutes),
+                    ongoingVisitLatestPaymentTime = null
                 )
 
                 `when`(paymentService.startPayment(startPaymentDto))
@@ -188,7 +194,7 @@ internal class PaymentControllerTest {
                 "When request has paymentSessionId input that is less than 1, " +
                         "then return a 400 and appropriate validation error message"
             )
-            fun `testWhenPaymentSessionIdInputLessThan1`() {
+            fun testWhenPaymentSessionIdInputLessThan1() {
                 makeCompletePaymentRequest(CompletePaymentDto(paymentSessionId = -1))
                     .andExpect(status().isBadRequest)
                     .andExpect(
@@ -214,7 +220,7 @@ internal class PaymentControllerTest {
                     "then returns an illegal-payment-attempt response " +
                     "with detail as the exception's message"
         )
-        fun `testWhenIllegalPaymentAttemptExceptionThrown`() {
+        fun testWhenIllegalPaymentAttemptExceptionThrown() {
             val exceptionMessage = "Illegal payment attempt exception message"
 
             `when`(paymentService.completePayment(completePaymentDto))

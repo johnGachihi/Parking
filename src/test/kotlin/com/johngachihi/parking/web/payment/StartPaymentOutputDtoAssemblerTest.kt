@@ -1,5 +1,6 @@
 package com.johngachihi.parking.web.payment
 
+import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.entities.payment.PaymentSession
 import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.entities.visit.Visit
@@ -59,7 +60,9 @@ internal class StartPaymentOutputDtoAssemblerTest {
         val paymentSession = PaymentSession().apply {
             id = 1
             amount = 100.0
-            visit = OngoingVisit()
+            visit = OngoingVisit().apply {
+                payments = listOf(Payment().apply { madeAt = Instant.parse("2021-11-04T10:15:30.00Z") })
+            }
             status = PaymentSession.Status.PENDING
         }
 
@@ -74,10 +77,16 @@ internal class StartPaymentOutputDtoAssemblerTest {
         assertThat(startPaymentOutputDto.paymentSessionDto.expiryTime)
             .isEqualTo(paymentSession.startedAt.plus(10.minutes))
 
-        assertThat(startPaymentOutputDto.visitTimeOfStay)
+        assertThat(startPaymentOutputDto.visit.timeOfStay)
             .isCloseTo(
                 Duration.between(paymentSession.visit.entryTime, Instant.now()),
                 Duration.ofMinutes(1)
             )
+
+        assertThat(startPaymentOutputDto.visit.entryTime)
+            .isEqualTo(paymentSession.visit.entryTime)
+
+        assertThat(startPaymentOutputDto.visit.latestPaymentTime)
+            .isEqualTo(paymentSession.visit.payments[0].madeAt)
     }
 }

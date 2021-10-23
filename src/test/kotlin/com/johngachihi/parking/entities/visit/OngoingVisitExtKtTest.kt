@@ -87,6 +87,28 @@ internal class OngoingVisitExtKtTest {
     }
 
     @Nested
+    @DisplayName("TestLatestPaymentOrNull")
+    inner class TestLatestPaymentOrNull {
+        @Test
+        fun `When the OngoingVisit has no payments, returns null`() {
+            val ongoingVisit = OngoingVisit()
+            assertThat(ongoingVisit.latestPaymentOrNull).isNull()
+        }
+
+        @Test
+        fun `When the OngoingVisit has at least one payment, then returns latest one`() {
+            val payments = listOf(
+                Payment().apply { madeAt = 10.minutesAgo },
+                Payment().apply { madeAt = 20.minutesAgo },
+            )
+            val ongoingVisit = OngoingVisit().apply { this.payments = payments }
+
+            assertThat(ongoingVisit.latestPaymentOrNull)
+                .isEqualTo(payments.first())
+        }
+    }
+
+    @Nested
     @DisplayName("Test isInExitAllowancePeriod")
     inner class TestIsInExitAllowancePeriod {
         @Test

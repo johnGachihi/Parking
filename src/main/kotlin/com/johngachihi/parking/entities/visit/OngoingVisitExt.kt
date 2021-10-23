@@ -23,6 +23,9 @@ val OngoingVisit.latestPayment: Payment
     get() = payments.maxByOrNull { it.madeAt }
         ?: throw NoSuchElementException()
 
+val OngoingVisit.latestPaymentOrNull: Payment?
+    get() = payments.maxByOrNull { it.madeAt }
+
 fun OngoingVisit.isInExitAllowancePeriod(
     maxAgeBeforePaymentExpiry: Duration
 ): Boolean = hasAtLeastOnePayment && !latestPayment.isExpired(maxAgeBeforePaymentExpiry)

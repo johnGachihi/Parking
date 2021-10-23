@@ -2,6 +2,7 @@ package com.johngachihi.parking.web.payment
 
 import com.johngachihi.parking.entities.payment.PaymentSession
 import com.johngachihi.parking.entities.visit.OngoingVisit
+import com.johngachihi.parking.entities.visit.latestPaymentOrNull
 import com.johngachihi.parking.entities.visit.timeOfStay
 import com.johngachihi.parking.repositories.settings.PaymentSettingsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +27,9 @@ class StartPaymentOutputDtoAssembler(
             paymentSession.id!!,
             paymentSession.startedAt.plus(maxAgeBeforePaymentSessionExpiry),
             paymentSession.amount!!,
-            ongoingVisit.timeOfStay
+            ongoingVisit.timeOfStay,
+            ongoingVisit.entryTime,
+            ongoingVisit.latestPaymentOrNull?.madeAt
         )
     }
 }

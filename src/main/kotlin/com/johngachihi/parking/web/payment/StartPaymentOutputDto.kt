@@ -8,7 +8,9 @@ class StartPaymentOutputDto(
     paymentSessionId: Long,
     paymentSessionExpiryTime: Instant,
     paymentAmount: Double,
-    ongoingVisitTimeOfStay: Duration
+    ongoingVisitTimeOfStay: Duration,
+    ongoingVisitEntryTime: Instant,
+    ongoingVisitLatestPaymentTime: Instant?
 ) {
     @JsonProperty("paymentSession")
     val paymentSessionDto = PaymentSessionDto(
@@ -16,8 +18,9 @@ class StartPaymentOutputDto(
         paymentAmount,
         paymentSessionExpiryTime
     )
-    
-    val visitTimeOfStay = ongoingVisitTimeOfStay
-    
+
+    val visit = VisitDto(ongoingVisitTimeOfStay, ongoingVisitEntryTime, ongoingVisitLatestPaymentTime)
+
     inner class PaymentSessionDto(val id: Long, val paymentAmount: Double, val expiryTime: Instant)
+    inner class VisitDto(val timeOfStay: Duration, val entryTime: Instant, val latestPaymentTime: Instant?)
 }
