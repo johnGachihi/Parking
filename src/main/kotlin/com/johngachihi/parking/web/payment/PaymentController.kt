@@ -4,6 +4,7 @@ import com.johngachihi.parking.services.payment.CompletePaymentDto
 import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
+@CrossOrigin
 @RequestMapping("/payment")
 class PaymentController(
     @Autowired
