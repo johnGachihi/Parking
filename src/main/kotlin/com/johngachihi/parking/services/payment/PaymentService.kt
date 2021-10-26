@@ -3,7 +3,9 @@ package com.johngachihi.parking.services.payment
 import com.johngachihi.parking.InvalidTicketCodeException
 import com.johngachihi.parking.entities.payment.Payment
 import com.johngachihi.parking.entities.payment.PaymentSession
+import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.entities.visit.isInExitAllowancePeriod
+import com.johngachihi.parking.entities.visit.latestPayment
 import com.johngachihi.parking.repositories.payment.PaymentRepository
 import com.johngachihi.parking.repositories.payment.PaymentSessionRepository
 import com.johngachihi.parking.repositories.settings.PaymentSettingsRepository
@@ -12,6 +14,7 @@ import com.johngachihi.parking.services.ParkingFeeCalculatorService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -54,10 +57,10 @@ class DefaultPaymentService(
                 "The ticket code provided (${startPaymentDto.ticketCode}) is not for an ongoing visit"
             )
 
-        val maxAgeBeforePaymentExpiry = paymentSettingsRepository.maxAgeBeforePaymentExpiry
-        if (ongoingVisit.isInExitAllowancePeriod(maxAgeBeforePaymentExpiry)) {
+        if (ongoingVisit.isInExitAllowancePeriod) {
             throw IllegalPaymentAttemptException(
-                "A payment cannot be made for a visit that is in an exit allowance period"
+                "Parking fee paid. ${ongoingVisit.durationLeftInExitAllowancePeriod.toMinutes()} " +
+                        "minutes left before charging resumes"
             )
         }
 
@@ -68,6 +71,19 @@ class DefaultPaymentService(
             visit = ongoingVisit
         })
     }
+
+    private val OngoingVisit.isInExitAllowancePeriod: Boolean
+        get() {
+            val maxAgeBeforePaymentExpiry = paymentSettingsRepository.maxAgeBeforePaymentExpiry
+            return this.isInExitAllowancePeriod(maxAgeBeforePaymentExpiry)
+        }
+
+    private val OngoingVisit.durationLeftInExitAllowancePeriod: Duration
+        get() {
+            val maxAgeBeforePaymentExpiry = paymentSettingsRepository.maxAgeBeforePaymentExpiry
+            val expiryTime = this.latestPayment.madeAt.plus(maxAgeBeforePaymentExpiry)
+            return Duration.between(Instant.now(), expiryTime)
+        }
 
     // TODO: Change PaymentSession status to completed
     override fun completePayment(completePaymentDto: CompletePaymentDto) {

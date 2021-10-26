@@ -80,7 +80,7 @@ internal class DefaultPaymentServiceTest {
 
             assertThatExceptionOfType(IllegalPaymentAttemptException::class.java)
                 .isThrownBy { paymentService.startPayment(startPaymentDto) }
-                .withMessage("A payment cannot be made for a visit that is in an exit allowance period")
+                .withMessageMatching("Parking fee paid. [0-9]* minutes left before charging resumes")
         }
 
         @Nested

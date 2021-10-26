@@ -26,6 +26,8 @@ val OngoingVisit.latestPayment: Payment
 val OngoingVisit.latestPaymentOrNull: Payment?
     get() = payments.maxByOrNull { it.madeAt }
 
+// TODO: Move this to Service layer because of its parameter.
+//       Or wrap it at point of use (Service layer)
 fun OngoingVisit.isInExitAllowancePeriod(
     maxAgeBeforePaymentExpiry: Duration
 ): Boolean = hasAtLeastOnePayment && !latestPayment.isExpired(maxAgeBeforePaymentExpiry)
