@@ -30,6 +30,11 @@ class PaymentController(
     fun completePayment(@Valid @RequestBody input: CompletePaymentDto) {
         paymentService.completePayment(input)
     }
+
+    @PutMapping("/cancel-payment")
+    fun cancelPayment(@Valid @RequestBody input: CancelPaymentDto) {
+        paymentService.cancelPayment(input.paymentSessionId)
+    }
 }
 
 

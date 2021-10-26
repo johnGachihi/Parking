@@ -14,7 +14,6 @@ import com.johngachihi.parking.services.ParkingFeeCalculatorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -110,7 +109,11 @@ internal class DefaultPaymentServiceTest {
             }
 
             @Test
-            fun `then creates and stores a new PaymentSession with 'amount' as calculated by ParkingFeeCalculatorService`() {
+            @DisplayName(
+                "then creates and stores a new PaymentSession with " +
+                        "'amount' as calculated by ParkingFeeCalculatorService"
+            )
+            fun thenCreatesAndStoresANewPaymentSessionWithAppropriateAmount() {
                 every {
                     parkingFeeCalculatorService.calculateFee(ongoingVisit)
                 } returns 987.0
@@ -218,7 +221,7 @@ internal class DefaultPaymentServiceTest {
                     "but that is older than the set max-payment-session-age, " +
                     "then throws IllegalPaymentAttemptException with appropriate message"
         )
-        fun `testWhenPaymentSessionTooOld`() {
+        fun testWhenPaymentSessionTooOld() {
             every {
                 paymentSessionRepository.findByIdOrNull(completePaymentDto.paymentSessionId)
             } returns PaymentSession().apply {
@@ -268,6 +271,96 @@ internal class DefaultPaymentServiceTest {
             verify {
                 paymentRepository.save(match {
                     it.visit == ongoingVisit && it.amount == 100.0
+                })
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Test cancelPayment()")
+    inner class TestCancelPaymentMethod {
+        @Test
+        @DisplayName(
+            "When paymentSessionId provided is for non-existent PaymentSession, " +
+                    "then throws IllegalPaymentCancellationException"
+        )
+        fun testWhenPaymentSessionIdProvidedIsForNonExistentPaymentSession() {
+            val paymentSessionId = 123L
+
+            every {
+                paymentSessionRepository.findByIdOrNull(paymentSessionId)
+            } returns null
+
+            assertThatExceptionOfType(IllegalPaymentCancellationAttemptException::class.java)
+                .isThrownBy { paymentService.cancelPayment(paymentSessionId) }
+                .withMessage("Attempted to cancel a non-existent payment-session")
+        }
+
+        @Test
+        @DisplayName(
+            "When PaymentSession being cancelled is not PENDING, " +
+                    "then throws IllegalPaymentCancellationException"
+        )
+        fun testWhenPaymentSessionIsNotPending() {
+            val paymentSessionId = 123L
+
+            every {
+                paymentSessionRepository.findByIdOrNull(paymentSessionId)
+            } returns PaymentSession().apply {
+                status = PaymentSession.Status.COMPLETED
+            }
+
+            assertThatExceptionOfType(IllegalPaymentCancellationAttemptException::class.java)
+                .isThrownBy { paymentService.cancelPayment(paymentSessionId) }
+                .withMessage("Attempted to cancel an ended payment session")
+        }
+
+        @Test
+        @DisplayName(
+            "When PaymentSession is marked PENDING but is expired, " +
+                    "then throws IllegalPaymentCancellationException"
+        )
+        fun testWhenPaymentSessionIsMarkedPendingButIsExpired() {
+            val paymentSessionId = 123L
+
+            every {
+                paymentSessionRepository.findByIdOrNull(paymentSessionId)
+            } returns PaymentSession().apply {
+                startedAt = 20.minutesAgo
+                status = PaymentSession.Status.PENDING
+            }
+
+            every {
+                paymentSettingsRepository.maxAgeBeforePaymentSessionExpiry
+            } returns 10.minutes
+
+            assertThatExceptionOfType(IllegalPaymentCancellationAttemptException::class.java)
+                .isThrownBy { paymentService.cancelPayment(paymentSessionId) }
+                .withMessage("Attempted to cancel an ended payment session")
+        }
+
+        @Test
+        fun `When PaymentSession is truly PENDING, then updates it to CANCELLED`() {
+            val paymentSessionId = 123L
+
+            every {
+                paymentSessionRepository.findByIdOrNull(paymentSessionId)
+            } returns PaymentSession().apply {
+                startedAt = 20.minutesAgo
+                status = PaymentSession.Status.PENDING
+            }
+
+            every {
+                paymentSettingsRepository.maxAgeBeforePaymentSessionExpiry
+            } returns 25.minutes
+
+            every { paymentSessionRepository.save(any()) } returns PaymentSession()
+
+            paymentService.cancelPayment(paymentSessionId)
+
+            verify {
+                paymentSessionRepository.save(match {
+                    it.status == PaymentSession.Status.CANCELLED
                 })
             }
         }

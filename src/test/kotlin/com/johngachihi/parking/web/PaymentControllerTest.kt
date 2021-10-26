@@ -7,10 +7,13 @@ import com.johngachihi.parking.entities.visit.OngoingVisit
 import com.johngachihi.parking.minutes
 import com.johngachihi.parking.services.payment.CompletePaymentDto
 import com.johngachihi.parking.services.payment.IllegalPaymentAttemptException
+import com.johngachihi.parking.services.payment.IllegalPaymentCancellationAttemptException
 import com.johngachihi.parking.services.payment.PaymentService
 import com.johngachihi.parking.services.payment.StartPaymentDto
 import com.johngachihi.parking.web.exceptionhandling.IllegalPaymentAttemptErrorResponse
+import com.johngachihi.parking.web.exceptionhandling.IllegalPaymentCancellationAttemptErrorResponse
 import com.johngachihi.parking.web.exceptionhandling.InvalidTicketCodeErrorResponse
+import com.johngachihi.parking.web.payment.CancelPaymentDto
 import com.johngachihi.parking.web.payment.PaymentController
 import com.johngachihi.parking.web.payment.StartPaymentOutputDto
 import com.johngachihi.parking.web.payment.StartPaymentOutputDtoAssembler
@@ -239,6 +242,80 @@ internal class PaymentControllerTest {
         private fun makeCompletePaymentRequest(requestInput: CompletePaymentDto): ResultActions {
             return makeRequest("/payment/complete-payment", requestInput)
         }
+    }
+
+    @Nested
+    @DisplayName("Test /payment/cancel-payment")
+    inner class TestCancelPaymentEndpoint {
+        @Nested
+        @DisplayName("Test input validation")
+        inner class TestInputValidation {
+            @Test
+            @DisplayName(
+                "When paymentSessionId is not Provided, then returns a 400" +
+                        "response and appropriate validation error message"
+            )
+            fun testWhenPaymentSessionIdNotProvided() {
+                makeRequest("/payment/cancel-payment", "{}")
+                    .andExpect(status().isBadRequest)
+                    .andExpect(
+                        hasViolation(
+                            "paymentSessionId",
+                            "A payment-session ID is required and must be greater than zero"
+                        )
+                    )
+            }
+
+            @Test
+            @DisplayName(
+                "When paymentSessionId is below 1, then returns a 400 " +
+                        "response with appropriate validation error message"
+            )
+            fun testWhenPaymentSessionIdProvidedBelowOne() {
+                makeCancelPaymentRequest(CancelPaymentDto(paymentSessionId = -1))
+                    .andExpect(status().isBadRequest)
+                    .andExpect(
+                        hasViolation(
+                            "paymentSessionId",
+                            "A payment-session ID is required and must be greater than zero"
+                        )
+                    )
+            }
+        }
+
+        @Test
+        fun `When request data is valid, then uses PaymentService#cancelPayment to attempt cancellation`() {
+            val paymentSessionId = 1L
+
+            makeCancelPaymentRequest(CancelPaymentDto(paymentSessionId))
+                .andExpect(status().isOk)
+
+            verify(paymentService, times(1))
+                .cancelPayment(paymentSessionId)
+        }
+
+        @Test
+        @DisplayName(
+            "When attempt to cancel payment throws IllegalPaymentCancellationAttemptException, " +
+                    "then returns 400 response with appropriate error message"
+        )
+        fun testWhenCancellationAttemptThrowsIllegalPaymentCancellationAttemptException() {
+            val paymentSessionId = 1L
+
+            val errorResponse = IllegalPaymentCancellationAttemptErrorResponse(
+                "Illegal payment cancellation"
+            )
+
+            `when`(paymentService.cancelPayment(paymentSessionId))
+                .thenThrow(IllegalPaymentCancellationAttemptException(errorResponse.detail))
+
+            makeCancelPaymentRequest(CancelPaymentDto(paymentSessionId))
+                .andExpect(status().isBadRequest)
+                .andExpect(jsonEqualTo(errorResponse))
+        }
+
+        private fun makeCancelPaymentRequest(requestInput: CancelPaymentDto) =
+            makeRequest("/payment/cancel-payment", requestInput)
     }
 
 

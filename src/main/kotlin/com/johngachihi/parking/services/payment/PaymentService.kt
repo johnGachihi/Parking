@@ -26,6 +26,11 @@ interface PaymentService {
      * @throws IllegalPaymentAttemptException
      */
     fun completePayment(completePaymentDto: CompletePaymentDto)
+
+    /**
+     * @throws IllegalPaymentCancellationAttemptException
+     */
+    fun cancelPayment(paymentSessionId: Long)
 }
 
 
@@ -64,6 +69,7 @@ class DefaultPaymentService(
         })
     }
 
+    // TODO: Change PaymentSession status to completed
     override fun completePayment(completePaymentDto: CompletePaymentDto) {
         val paymentSession = paymentSessionRepo.findByIdOrNull(completePaymentDto.paymentSessionId)
             ?: throw IllegalPaymentAttemptException("Attempted to complete a non-existent payment session")
@@ -77,7 +83,7 @@ class DefaultPaymentService(
         // Checks paymentSession's age using its startedAt property
         // in case the paymentSession should be, but has not yet,
         // been updated to status EXPIRED
-        if (paymentSession.isTooOld()) {
+        if (paymentSession.isExpired()) {
             throw IllegalPaymentAttemptException(
                 "Attempted to complete a payment session that is EXPIRED"
             )
@@ -89,10 +95,24 @@ class DefaultPaymentService(
         })
     }
 
-    // TODO: Better name
-    fun PaymentSession.isTooOld(): Boolean {
-        val age = startedAt.until(Instant.now(), ChronoUnit.MINUTES)
+    override fun cancelPayment(paymentSessionId: Long) {
+        val paymentSession = paymentSessionRepo.findByIdOrNull(paymentSessionId)
+            ?: throw IllegalPaymentCancellationAttemptException(
+                "Attempted to cancel a non-existent payment-session"
+            )
 
+        if (paymentSession.status != PaymentSession.Status.PENDING)
+            throw IllegalPaymentCancellationAttemptException("Attempted to cancel an ended payment session")
+
+        if (paymentSession.isExpired())
+            throw IllegalPaymentCancellationAttemptException("Attempted to cancel an ended payment session")
+
+        paymentSession.status = PaymentSession.Status.CANCELLED
+        paymentSessionRepo.save(paymentSession)
+    }
+
+    private fun PaymentSession.isExpired(): Boolean {
+        val age = startedAt.until(Instant.now(), ChronoUnit.MINUTES)
         return age > paymentSettingsRepository.maxAgeBeforePaymentSessionExpiry.toMinutes()
     }
 }
